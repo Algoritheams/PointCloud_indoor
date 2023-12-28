@@ -6,3 +6,12 @@ import yaml
 import os
 
 
+def read_file (file):
+  with open(file, "r") as stream:
+    try:
+       read = yaml.safe_load(stream)
+      return read
+except yaml. YAMLError as exc:
+print (exc) 
+
+
