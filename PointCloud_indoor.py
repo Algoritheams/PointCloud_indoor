@@ -13,6 +13,7 @@ def read_file (file):
       return read
 except yaml. YAMLError as exc:
 print (exc) 
+
 import math
 
 class LidarScan:
