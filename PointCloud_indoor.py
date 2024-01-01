@@ -36,9 +36,18 @@ class LidarScan:
         for point in self.points:
             print(f"Point: {point}")
 
+    def save_to_file(self, file_path):
+        with open(file_path, 'w') as file:
+            for point in self.points:
+                file.write(f"{point[0]}, {point[1]}\n")
+
 # Example usage:
 lidar_scan = LidarScan()
 lidar_scan.generate_scan()
 lidar_scan.print_scan()
+
+# Save the scan data to a file
+output_file_path = "C:/Users/Admin/OneDrive - hacettepe.edu.tr/Masaüstü/lidar_scan_data.txt"
+lidar_scan.save_to_file(output_file_path)
 
 
