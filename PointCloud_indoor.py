@@ -6,48 +6,85 @@ import yaml
 import os
 
 
-def read_file (file):
-  with open(file, "r") as stream:
-    try:
-       read = yaml.safe_load(stream)
-      return read
-except yaml. YAMLError as exc:
-print (exc) 
+import random
 
-import math
+def choose_geospatial_word():
+    geospatial_words = [
+        "cartography",
+        "coordinate reference systems",
+        "geographic data",
+        "geographic information systems",
+        "geographic information technology",
+        "geographic database",
+        "geodesy",
+        "geodetic coordinate systems",
+        "geodetic measurements",
+        "geodetic networks",
+        "geoinformatics",
+        "geomatics engineering",
+        "geospatial technologies",
+        "gis analysis",
+        "gnss",
+        "map projection",
+        "remote sensing",
+        "remote sensing data",
+        "spatial analysis",
+        "spatial planning"
+    ]
+    return random.choice(geospatial_words)
 
-class LidarScan:
-    def __init__(self, num_points=360, radius=10):
-        self.num_points = num_points
-        self.radius = radius
-        self.points = []
+def display_word(secret_word, guessed_letters):
+    return "".join(letter if letter in guessed_letters else "_" for letter in secret_word)
 
-    def generate_scan(self):
-        self.points = []
-        angle_increment = 360 / self.num_points
+def calculate_score(secret_word, guessed_letters, incorrect_guesses):
+    correct_guesses = set(guessed_letters).intersection(set(secret_word))
+    uncovered_letters = len(set(secret_word) - set(correct_guesses))
+    score = len(correct_guesses) - (0.1 * incorrect_guesses) - uncovered_letters
+    return max(score, 0)
 
-        for i in range(self.num_points):
-            angle = math.radians(i * angle_increment)
-            x = self.radius * math.cos(angle)
-            y = self.radius * math.sin(angle)
-            self.points.append((x, y))
+def geospatial_word_guess_game():
+    user_name = input("What's your name? ")
+    secret_word = choose_geospatial_word()
+    guessed_letters = set()
+    incorrect_guesses = 0
+    max_incorrect_guesses = 3
 
-    def print_scan(self):
-        for point in self.points:
-            print(f"Point: {point}")
+    print(f"Welcome, {user_name}, to the Geospatial Word Guessing Game!")
+    print(f"The geospatial term has {len(secret_word)} letters.")
+    print("The geospatial term you need to guess:", display_word(secret_word, guessed_letters))
 
-    def save_to_file(self, file_path):
-        with open(file_path, 'w') as file:
-            for point in self.points:
-                file.write(f"{point[0]}, {point[1]}\n")
+    while True:
+        guess = input("Guess a letter: ").lower()
 
-# Example usage:
-lidar_scan = LidarScan()
-lidar_scan.generate_scan()
-lidar_scan.print_scan()
+        if guess in guessed_letters:
+            print("You already guessed this letter. Try another one.")
+            continue
 
-# Save the scan data to a file
-output_file_path = "C:/Users/Admin/OneDrive - hacettepe.edu.tr/Masaüstü/lidar_scan_data.txt"
-lidar_scan.save_to_file(output_file_path)
+        guessed_letters.add(guess)
 
+        if guess not in secret_word:
+            incorrect_guesses += 1
+            print(f"Wrong guess! Remaining guesses: {max_incorrect_guesses - incorrect_guesses}")
 
+        print("The geospatial term you need to guess:", display_word(secret_word, guessed_letters))
+
+        if set(secret_word) <= guessed_letters:
+            score = calculate_score(secret_word, guessed_letters, incorrect_guesses)
+            print(f"Congratulations, {user_name}! You found the geospatial term. Your score: {score}")
+            break
+
+        if incorrect_guesses == max_incorrect_guesses:
+            score = calculate_score(secret_word, guessed_letters, incorrect_guesses)
+            print(f"Unfortunately, you've run out of guesses. The correct geospatial term was: {secret_word}")
+            print(f"Your score: {score}")
+            break
+
+    if incorrect_guesses == max_incorrect_guesses:
+        give_up = input("Do you want to give up? (yes/no): ").lower()
+        if give_up == "yes":
+            score = calculate_score(secret_word, guessed_letters, incorrect_guesses)
+            print(f"Sorry to see you give up, {user_name}. The correct geospatial term was: {secret_word}")
+            print(f"Your score: {score}")
+
+if __name__ == "__main__":
+    geospatial_word_guess_game()
